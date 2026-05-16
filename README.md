@@ -10,7 +10,7 @@ Clasificación de cáncer de piel con MLP (Backpropagation) usando el dataset HA
 ### 1. Instalar dependencias
 
 ```bash
-pip install scikit-learn pandas numpy matplotlib seaborn kaggle
+pip install -r requirements.txt
 ```
 
 ### 2. Descargar el dataset
@@ -40,7 +40,7 @@ archive/
 ├── HAM10000_images_part_1/   (imágenes originales)
 ├── HAM10000_images_part_2/   (imágenes originales)
 ├── HAM10000_metadata.csv
-├── hmnist_8_8_L.csv          ← usado por el notebook
+├── hmnist_28_28_L.csv        ← usado por el notebook (28×28 px)
 ├── hmnist_8_8_RGB.csv
 ├── hmnist_28_28_L.csv
 └── hmnist_28_28_RGB.csv
@@ -56,7 +56,7 @@ Abrí y ejecutá el notebook:
 jupyter notebook skin_cancer_RNA.ipynb
 ```
 
-El notebook usa `archive/hmnist_8_8_L.csv` (imágenes 8×8 píxeles, escala de grises).
+El notebook usa `archive/hmnist_28_28_L.csv` (imágenes 28×28 píxeles, escala de grises, 784 features).
 
 ---
 
