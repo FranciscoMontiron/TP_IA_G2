@@ -1,0 +1,21 @@
+# Dataset completo — archivos demasiado pesados para GitHub
+archive.zip
+archive/HAM10000_images_part_1/
+archive/HAM10000_images_part_2/
+archive/hmnist_28_28_RGB.csv
+
+# Claude Code — configuración local
+.claude/
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
