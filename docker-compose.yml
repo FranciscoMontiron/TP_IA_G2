@@ -2,16 +2,15 @@ version: '3.8'
 
 # ── Clasificador de Lesiones Cutáneas — UTN FRLP 2026 ─────────────────────────
 #
-# Flujo automático con "docker-compose up --build":
-#   1. Si no hay dataset  → lo descarga de Google Drive (~3 GB)
-#   2. Si no hay modelo   → lo entrena con el dataset (~5-10 min)
-#   3. Lanza la app en    http://localhost:7860
+# La primera vez que no haya modelo, el contenedor pregunta:
+#   1) Descargar modelo pre-entrenado  (~13 MB, segundos)  ← recomendado
+#   2) Descargar dataset + entrenar    (~3 GB + varios min)
 #
 # Comandos:
-#   docker-compose up --build   # Primera vez (descarga + entrena + lanza)
-#   docker-compose up           # Siguientes veces (modelo ya guardado)
-#   docker-compose down         # Detener
-#   docker-compose down -v      # Detener y borrar modelo (forzar re-entrenamiento)
+#   docker-compose run --rm skin-cancer-app   # Primera vez (con prompt interactivo)
+#   docker-compose up                          # Siguientes veces (modelo ya guardado)
+#   docker-compose down                        # Detener
+#   docker-compose down -v                     # Borrar modelo (forzar nueva elección)
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -20,15 +19,18 @@ services:
     image: skin-cancer-clasificador:latest
     container_name: skin-cancer-app
 
+    # Necesario para el prompt interactivo en la primera ejecución
+    stdin_open: true
+    tty: true
+
     ports:
       - "7860:7860"
 
     volumes:
-      # Dataset: si ya está descargado en archive/ se usa directamente.
-      # Si no existe, el entrypoint lo descarga automáticamente de Google Drive.
+      # Dataset (solo necesario si se elige la opción 2 — entrenar desde cero)
       - ./archive:/app/archive
 
-      # Modelo: persiste entre reinicios en un volumen Docker nombrado.
+      # Modelo: persiste entre reinicios para no volver a descargar/entrenar
       - model-store:/app/model
 
     environment:
@@ -37,10 +39,6 @@ services:
       - GRADIO_LAUNCH_INBROWSER=false
       - MODEL_PATH=/app/model/modelo_mlp.pkl
 
-      # Opcional: credenciales Kaggle (solo si Google Drive falla)
-      #- KAGGLE_USERNAME=tu_usuario
-      #- KAGGLE_KEY=tu_api_key
-
     restart: unless-stopped
 
     healthcheck:
@@ -48,7 +46,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 120s
+      start_period: 60s
 
 volumes:
   model-store:

@@ -36,9 +36,26 @@ Con Docker no necesitás instalar nada manualmente. El contenedor se encarga sol
 ### Levantar la app
 
 ```bash
-# Primera vez: construye la imagen, descarga dataset (~3 GB), entrena y lanza
-docker-compose up --build
+# Primera vez: construye la imagen y te pregunta qué querés hacer
+docker-compose build
+docker-compose run --rm skin-cancer-app
+```
 
+Al iniciar por primera vez, el contenedor pregunta:
+
+```
+¿Qué querés hacer?
+
+  1) Descargar modelo pre-entrenado  (recomendado)
+     → Solo ~13 MB · listo en segundos
+
+  2) Descargar dataset y entrenar desde cero
+     → ~3 GB de descarga + varios minutos de entrenamiento
+
+Opción [1/2] (default: 1):
+```
+
+```bash
 # Veces siguientes: el modelo ya está guardado, arranca directo
 docker-compose up
 ```
@@ -49,7 +66,7 @@ Abrí el navegador en **http://localhost:7860**.
 # Detener
 docker-compose down
 
-# Detener y borrar el modelo guardado (para re-entrenar desde cero)
+# Borrar el modelo guardado (para volver a elegir la próxima vez)
 docker-compose down -v
 ```
 
@@ -77,6 +94,19 @@ Esto descarga automáticamente el dataset desde Google Drive (~3 GB) y lo descom
 > 1. Descargá `archive.zip` desde este link:
 >    **https://drive.google.com/file/d/1tikVuhOOlZ3-klxTUgNS_3pFykmaVXYK/view**
 > 2. Descomprimilo en la raíz del proyecto. Debe quedar así:
+>    ```
+>    archive/
+>    ├── hmnist_28_28_L.csv     ← este es el que usa el modelo
+>    ├── hmnist_28_28_RGB.csv
+>    └── HAM10000_metadata.csv
+>    ```
+
+**O si ya querés el modelo entrenado sin bajar el dataset:**
+> Descargá `modelo_mlp.pkl` (13 MB) directo:
+> **https://drive.google.com/file/d/1ADbyFVULbkTcFLLZtantUZO6iMvkXjxM/view**
+> Ponelo en la raíz del proyecto (donde está `app.py`) y ejecutá `python app.py`.
+
+
 >    ```
 >    archive/
 >    ├── hmnist_28_28_L.csv     ← este es el que usa el modelo
