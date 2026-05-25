@@ -1,6 +1,3 @@
-# ── Modelo entrenado — regenerar con: python train_and_save.py ────────────────
-modelo_mlp.pkl
-
 # ── Dataset completo — archivos demasiado pesados para GitHub ─────────────────
 archive.zip
 archive/HAM10000_images_part_1/

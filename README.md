@@ -11,64 +11,40 @@ Accuracy obtenido: **64.54%** con arquitectura 784 → 512 → 256 → 128 → 7
 ```
 TP IA/
 ├── app.py                       # Aplicación web Gradio
-├── train_and_save.py            # Script de entrenamiento standalone
+├── modelo_mlp.pkl               # Modelo entrenado (incluido en el repo)
+├── train_and_save.py            # Script para re-entrenar el modelo
 ├── download_data.py             # Descarga del dataset (Drive o Kaggle)
 ├── skin_cancer_RNA.ipynb        # Notebook principal de entrenamiento
 ├── requirements.txt             # Dependencias Python
 ├── Dockerfile                   # Imagen Docker de la app
 ├── docker-compose.yml           # Orquestación Docker
-├── docker-entrypoint.sh         # Script de inicio del contenedor
 ├── docs/                        # Documentación y entregas
-├── figures/                     # Gráficos generados por el notebook
-└── archive/                     # Dataset HAM10000 (no incluido en el repo)
-    └── hmnist_28_28_L.csv       ← requerido para entrenar
+└── figures/                     # Gráficos generados por el notebook
 ```
 
 ---
 
-## ⚡ Opción A — Docker (recomendado, automatiza todo)
+## ⚡ Opción A — Docker (recomendado)
 
-Con Docker no necesitás instalar nada manualmente. El contenedor se encarga solo de descargar el dataset, entrenar el modelo y lanzar la app.
+El modelo ya está incluido en el repo. Docker solo instala dependencias y lanza la app.
 
 ### Requisitos
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y corriendo.
 
-### Levantar la app
+### Comandos
 
 ```bash
-# Primera vez: construye la imagen y te pregunta qué querés hacer
-docker-compose build
-docker-compose run --rm skin-cancer-app
-```
+# Primera vez
+docker-compose up --build
 
-Al iniciar por primera vez, el contenedor pregunta:
-
-```
-¿Qué querés hacer?
-
-  1) Descargar modelo pre-entrenado  (recomendado)
-     → Solo ~13 MB · listo en segundos
-
-  2) Descargar dataset y entrenar desde cero
-     → ~3 GB de descarga + varios minutos de entrenamiento
-
-Opción [1/2] (default: 1):
-```
-
-```bash
-# Veces siguientes: el modelo ya está guardado, arranca directo
+# Veces siguientes
 docker-compose up
+
+# Detener
+docker-compose down
 ```
 
 Abrí el navegador en **http://localhost:7860**.
-
-```bash
-# Detener
-docker-compose down
-
-# Borrar el modelo guardado (para volver a elegir la próxima vez)
-docker-compose down -v
-```
 
 ---
 
@@ -80,67 +56,40 @@ docker-compose down -v
 pip install -r requirements.txt
 ```
 
-### 2. Obtener el dataset
+### 2. Lanzar la app
 
-**Opción rápida — Google Drive (sin cuenta Kaggle):**
-
-```bash
-python download_data.py
-```
-
-Esto descarga automáticamente el dataset desde Google Drive (~3 GB) y lo descomprime en `archive/`.
-
-> Si preferís descargarlo manualmente:
-> 1. Descargá `archive.zip` desde este link:
->    **https://drive.google.com/file/d/1tikVuhOOlZ3-klxTUgNS_3pFykmaVXYK/view**
-> 2. Descomprimilo en la raíz del proyecto. Debe quedar así:
->    ```
->    archive/
->    ├── hmnist_28_28_L.csv     ← este es el que usa el modelo
->    ├── hmnist_28_28_RGB.csv
->    └── HAM10000_metadata.csv
->    ```
-
-**O si ya querés el modelo entrenado sin bajar el dataset:**
-> Descargá `modelo_mlp.pkl` (13 MB) directo:
-> **https://drive.google.com/file/d/1ADbyFVULbkTcFLLZtantUZO6iMvkXjxM/view**
-> Ponelo en la raíz del proyecto (donde está `app.py`) y ejecutá `python app.py`.
-
-
->    ```
->    archive/
->    ├── hmnist_28_28_L.csv     ← este es el que usa el modelo
->    ├── hmnist_28_28_RGB.csv
->    └── HAM10000_metadata.csv
->    ```
-
-**Opción alternativa — Kaggle API:**
-
-1. Ir a [kaggle.com](https://www.kaggle.com) → Settings → API → Create New Token
-2. Mover el `kaggle.json` descargado a `C:\Users\TuUsuario\.kaggle\` (Windows) o `~/.kaggle/` (Linux/Mac)
-3. Ejecutar: `python download_data.py`
-
-### 3. Entrenar el modelo
-
-**Script rápido** (sin Jupyter):
-```bash
-python train_and_save.py
-```
-Genera `modelo_mlp.pkl` en la raíz del proyecto.
-
-**Notebook completo** (con visualizaciones y análisis):
-```bash
-jupyter notebook skin_cancer_RNA.ipynb
-```
-Ejecutar todas las celdas. Los gráficos se guardan en `figures/`.
-
-### 4. Lanzar la aplicación
+El modelo ya está en el repo (`modelo_mlp.pkl`), así que podés correr la app directamente:
 
 ```bash
 python app.py
 ```
 
 Se abre automáticamente en **http://localhost:7860**.
+
+---
+
+## 🔁 Re-entrenar el modelo (opcional)
+
+Si querés entrenar el modelo desde cero necesitás el dataset HAM10000.
+
+### Descargar el dataset
+
+```bash
+python download_data.py
+```
+
+Descarga automáticamente `archive.zip` (~3 GB) desde Google Drive y lo descomprime en `archive/`.
+
+> Descarga manual: **https://drive.google.com/file/d/1tikVuhOOlZ3-klxTUgNS_3pFykmaVXYK/view**
+> Descomprimilo en `archive/` en la raíz del proyecto.
+
+### Entrenar
+
+```bash
+python train_and_save.py
+```
+
+Genera un nuevo `modelo_mlp.pkl` en la raíz del proyecto.
 
 ---
 
@@ -159,16 +108,3 @@ La app clasifica la lesión en 7 categorías:
 | 🟢 Benigno | bkl, df, nv, vasc |
 
 > ⚕️ **Aviso:** No reemplaza el diagnóstico médico profesional.
-
----
-
-## Variables de entorno
-
-| Variable | Default | Descripción |
-|---|---|---|
-| `MODEL_PATH` | `modelo_mlp.pkl` | Ruta al modelo entrenado |
-| `GRADIO_SERVER_NAME` | `0.0.0.0` | Dirección de escucha |
-| `GRADIO_SERVER_PORT` | `7860` | Puerto de la app |
-| `GRADIO_LAUNCH_INBROWSER` | `true` | Abrir navegador automáticamente (desactivado en Docker) |
-| `KAGGLE_USERNAME` | — | Usuario Kaggle (alternativa a kaggle.json) |
-| `KAGGLE_KEY` | — | API key Kaggle (alternativa a kaggle.json) |

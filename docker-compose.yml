@@ -2,15 +2,11 @@ version: '3.8'
 
 # ── Clasificador de Lesiones Cutáneas — UTN FRLP 2026 ─────────────────────────
 #
-# La primera vez que no haya modelo, el contenedor pregunta:
-#   1) Descargar modelo pre-entrenado  (~13 MB, segundos)  ← recomendado
-#   2) Descargar dataset + entrenar    (~3 GB + varios min)
+# El modelo ya viene incluido en la imagen. Solo hace falta:
+#   docker-compose up --build    # Primera vez
+#   docker-compose up            # Veces siguientes
 #
-# Comandos:
-#   docker-compose run --rm skin-cancer-app   # Primera vez (con prompt interactivo)
-#   docker-compose up                          # Siguientes veces (modelo ya guardado)
-#   docker-compose down                        # Detener
-#   docker-compose down -v                     # Borrar modelo (forzar nueva elección)
+# La app queda disponible en: http://localhost:7860
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -19,25 +15,13 @@ services:
     image: skin-cancer-clasificador:latest
     container_name: skin-cancer-app
 
-    # Necesario para el prompt interactivo en la primera ejecución
-    stdin_open: true
-    tty: true
-
     ports:
       - "7860:7860"
-
-    volumes:
-      # Dataset (solo necesario si se elige la opción 2 — entrenar desde cero)
-      - ./archive:/app/archive
-
-      # Modelo: persiste entre reinicios para no volver a descargar/entrenar
-      - model-store:/app/model
 
     environment:
       - GRADIO_SERVER_NAME=0.0.0.0
       - GRADIO_SERVER_PORT=7860
       - GRADIO_LAUNCH_INBROWSER=false
-      - MODEL_PATH=/app/model/modelo_mlp.pkl
 
     restart: unless-stopped
 
@@ -46,7 +30,4 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 60s
-
-volumes:
-  model-store:
+      start_period: 30s
