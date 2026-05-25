@@ -1,0 +1,51 @@
+version: '3.8'
+
+# ── Clasificador de Lesiones Cutáneas — UTN FRLP 2026 ─────────────────────────
+#
+# Uso rápido:
+#   docker-compose up --build      # Primera vez (construye imagen y entrena modelo)
+#   docker-compose up              # Siguientes veces (usa modelo ya entrenado)
+#   docker-compose down            # Detener
+#
+# La app queda disponible en: http://localhost:7860
+#
+# Requisito: la carpeta archive/ con hmnist_28_28_L.csv debe existir.
+# Obtenerla ejecutando localmente: python download_data.py
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  skin-cancer-app:
+    build: .
+    image: skin-cancer-clasificador:latest
+    container_name: skin-cancer-app
+
+    ports:
+      - "7860:7860"
+
+    volumes:
+      # Dataset (solo lectura desde el host)
+      - ./archive:/app/archive:ro
+
+      # Volumen para persistir el modelo entre reinicios del contenedor.
+      # El entrypoint entrena el modelo en el primer arranque y lo guarda aquí.
+      - model-store:/app/model
+
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+      - GRADIO_LAUNCH_INBROWSER=false
+      # Ruta del modelo dentro del contenedor (usada por app.py y train_and_save.py)
+      - MODEL_PATH=/app/model/modelo_mlp.pkl
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:7860/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s    # Tiempo suficiente para entrenar si es necesario
+
+# Volumen nombrado: persiste el modelo entre docker-compose down/up
+volumes:
+  model-store:

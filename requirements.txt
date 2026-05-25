@@ -6,3 +6,6 @@ seaborn
 imbalanced-learn
 kaggle
 jupyter
+gradio
+Pillow
+joblib

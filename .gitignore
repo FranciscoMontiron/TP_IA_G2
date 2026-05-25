@@ -1,21 +1,30 @@
-# Dataset completo — archivos demasiado pesados para GitHub
+# ── Modelo entrenado — regenerar con: python train_and_save.py ────────────────
+modelo_mlp.pkl
+
+# ── Dataset completo — archivos demasiado pesados para GitHub ─────────────────
 archive.zip
 archive/HAM10000_images_part_1/
 archive/HAM10000_images_part_2/
 archive/hmnist_28_28_RGB.csv
 
-# Claude Code — configuración local
+# ── Docker — artefactos locales ───────────────────────────────────────────────
+# (docker-compose.yml y Dockerfile SÍ se suben al repo)
+
+# ── Claude Code — configuración local ────────────────────────────────────────
 .claude/
 
-# Archivos de Python
+# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.pyc
 *.pyo
 .env
+*.egg-info/
+dist/
+build/
 
-# Jupyter checkpoints
+# ── Jupyter ───────────────────────────────────────────────────────────────────
 .ipynb_checkpoints/
 
-# Archivos de sistema
+# ── Archivos de sistema ───────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
