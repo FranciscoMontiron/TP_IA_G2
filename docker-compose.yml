@@ -2,17 +2,16 @@ version: '3.8'
 
 # ── Clasificador de Lesiones Cutáneas — UTN FRLP 2026 ─────────────────────────
 #
-# Flujo automático al hacer "docker-compose up --build":
-#   1. Construye la imagen con las dependencias de Python.
-#   2. Si no hay dataset → lo descarga de Kaggle (requiere credenciales abajo).
-#   3. Si no hay modelo  → lo entrena (puede tardar varios minutos).
-#   4. Lanza la app en   http://localhost:7860
+# Flujo automático con "docker-compose up --build":
+#   1. Si no hay dataset  → lo descarga de Google Drive (~3 GB)
+#   2. Si no hay modelo   → lo entrena con el dataset (~5-10 min)
+#   3. Lanza la app en    http://localhost:7860
 #
 # Comandos:
-#   docker-compose up --build   # Primera vez
-#   docker-compose up           # Veces siguientes (modelo ya entrenado)
+#   docker-compose up --build   # Primera vez (descarga + entrena + lanza)
+#   docker-compose up           # Siguientes veces (modelo ya guardado)
 #   docker-compose down         # Detener
-#   docker-compose down -v      # Detener y borrar el modelo guardado
+#   docker-compose down -v      # Detener y borrar modelo (forzar re-entrenamiento)
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -25,11 +24,11 @@ services:
       - "7860:7860"
 
     volumes:
-      # Dataset: se monta desde el host.
-      # Si no existe y se pasan las credenciales de Kaggle, se descarga solo.
+      # Dataset: si ya está descargado en archive/ se usa directamente.
+      # Si no existe, el entrypoint lo descarga automáticamente de Google Drive.
       - ./archive:/app/archive
 
-      # Modelo entrenado: persiste entre reinicios en un volumen Docker.
+      # Modelo: persiste entre reinicios en un volumen Docker nombrado.
       - model-store:/app/model
 
     environment:
@@ -38,11 +37,9 @@ services:
       - GRADIO_LAUNCH_INBROWSER=false
       - MODEL_PATH=/app/model/modelo_mlp.pkl
 
-      # ── Credenciales de Kaggle (opcionales) ─────────────────────────────────
-      # Descomentá y completá si querés que Docker descargue el dataset solo.
-      # Obtenelas en: kaggle.com → Settings → API → Create New Token
-      #- KAGGLE_USERNAME=tu_usuario_de_kaggle
-      #- KAGGLE_KEY=tu_api_key_de_kaggle
+      # Opcional: credenciales Kaggle (solo si Google Drive falla)
+      #- KAGGLE_USERNAME=tu_usuario
+      #- KAGGLE_KEY=tu_api_key
 
     restart: unless-stopped
 
@@ -53,7 +50,5 @@ services:
       retries: 3
       start_period: 120s
 
-# Volumen nombrado: el modelo persiste aunque hagas "docker-compose down"
-# Para re-entrenar desde cero: docker-compose down -v
 volumes:
   model-store:

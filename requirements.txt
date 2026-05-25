@@ -5,6 +5,7 @@ matplotlib
 seaborn
 imbalanced-learn
 kaggle
+gdown
 jupyter
 gradio
 Pillow
