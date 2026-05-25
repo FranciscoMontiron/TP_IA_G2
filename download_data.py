@@ -41,7 +41,7 @@ def descargar_gdrive():
     zip_path = os.path.join(DEST, GDRIVE_ZIP_NAME)
     print(f"📥 Descargando dataset desde Google Drive...")
     print(f"   Destino: {zip_path}  (~3 GB, puede tardar varios minutos)")
-    gdown.download(id=GDRIVE_FILE_ID, output=zip_path, quiet=False, fuzzy=True)
+    gdown.download(id=GDRIVE_FILE_ID, output=zip_path, quiet=False)
     return zip_path
 
 

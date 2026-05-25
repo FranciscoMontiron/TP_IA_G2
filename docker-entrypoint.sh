@@ -52,7 +52,7 @@ if [ "$OPCION" = "1" ]; then
     mkdir -p "$(dirname "$MODEL_FILE")"
     python -c "
 import gdown, sys
-ok = gdown.download(id='$MODEL_GDRIVE_ID', output='$MODEL_FILE', quiet=False, fuzzy=True)
+ok = gdown.download(id='$MODEL_GDRIVE_ID', output='$MODEL_FILE', quiet=False)
 if not ok:
     print('ERROR: No se pudo descargar el modelo.')
     sys.exit(1)
