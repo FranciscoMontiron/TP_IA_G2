@@ -25,8 +25,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # ── Código fuente ─────────────────────────────────────────────────────────────
 COPY app.py .
 COPY train_and_save.py .
+COPY download_data.py .
 COPY docker-entrypoint.sh .
-RUN chmod +x docker-entrypoint.sh
+# Convertir CRLF → LF por si el archivo viene de Windows
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 
 # ── Puerto de la app ──────────────────────────────────────────────────────────
 EXPOSE 7860

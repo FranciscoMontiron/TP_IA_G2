@@ -1,0 +1,16 @@
+# Forzar LF en scripts de shell para que funcionen dentro de contenedores Linux
+*.sh text eol=lf
+
+# El resto de archivos de texto usa el default del sistema
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.csv text eol=lf
+
+# Binarios: sin conversión de líneas
+*.pkl binary
+*.png binary
+*.jpg binary
+*.zip binary
+*.pdf binary
